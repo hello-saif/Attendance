@@ -1,7 +1,9 @@
+import 'package:attendance/Screen/Sign%20In&Out/Pin_Verify.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'Screen/Lodar/Splash_Screen.dart';
+import 'Screen/Sign In&Out/Sign_In_Screen.dart';
 import 'firebase_options.dart';
 
 
@@ -26,6 +28,10 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const SplashScreen(),
+      routes: {
+        '/Sign_In_Screen': (context) => const Sign_In_Screen(title: 'Fail',),
+        // Add more routes as needed
+      },
     );
   }
 }

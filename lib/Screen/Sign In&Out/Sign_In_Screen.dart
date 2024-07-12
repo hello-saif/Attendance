@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../Nav_Bar.dart';
 import 'Email_Verify.dart';
@@ -18,7 +21,9 @@ class _Sign_In_ScreenState extends State<Sign_In_Screen> {
   final TextEditingController _passwordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoginInProgress = false;
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +85,20 @@ class _Sign_In_ScreenState extends State<Sign_In_Screen> {
                     ),
                     child: ElevatedButton(
                       onPressed: _signInWithEmailAndPassword,
-                      child: const Icon(Icons.g_mobiledata),
+                      child: const Text('Log In'),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  child: Visibility(
+                    replacement: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        _signInWithGoogle(context);
+                      },
+                      child: const Text('Sign in with Google'),
                     ),
                   ),
                 ),
@@ -99,7 +117,8 @@ class _Sign_In_ScreenState extends State<Sign_In_Screen> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const EmailVerificationScreen()));
+                              builder: (context) =>
+                                  const EmailVerificationScreen()));
                     },
                     child: const Text(
                       'Forgot Password?',
@@ -165,7 +184,7 @@ class _Sign_In_ScreenState extends State<Sign_In_Screen> {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const NavBar()),
-            (route) => false,
+        (route) => false,
       );
     } on FirebaseAuthException catch (e) {
       print('Failed with error code: ${e.code}');
@@ -174,6 +193,70 @@ class _Sign_In_ScreenState extends State<Sign_In_Screen> {
       setState(() {
         _isLoginInProgress = false;
       });
+    }
+  }
+
+  Future<void> _signInWithGoogle(BuildContext context) async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+      if (googleSignInAccount == null) {
+        // User canceled the Google Sign-In flow
+        return;
+      }
+      final GoogleSignInAuthentication googleAuth =
+          await googleSignInAccount.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential =
+          await _auth.signInWithCredential(credential);
+      final User? user = userCredential.user;
+
+      if (user != null) {
+        if (kDebugMode) {
+          if (kDebugMode) {
+            print('User ID: ${user.uid}');
+          }
+        }
+        if (kDebugMode) {
+          print('User Email: ${user.email}');
+        }
+
+        // Navigate to NavBar screen
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const NavBar()),
+          (route) => false,
+        );
+      } else {
+        if (kDebugMode) {
+          print('Sign in failed: User is null');
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error signing in with Google: $e');
+      }
+      // Handle specific types of exceptions if needed
+      if (e is PlatformException) {
+        if (kDebugMode) {
+          print('PlatformException details: ${e.details}');
+        }
+        if (kDebugMode) {
+          print('PlatformException code: ${e.code}');
+        }
+        // Handle specific error codes if necessary
+        if (e.code == '10') {
+          // Handle ApiException: 10 here
+          if (kDebugMode) {
+            print('Google Sign-In API Error: ApiException 10');
+          }
+        }
+      }
     }
   }
 }
