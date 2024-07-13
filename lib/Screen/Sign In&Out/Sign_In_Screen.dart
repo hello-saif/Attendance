@@ -89,18 +89,54 @@ class _Sign_In_ScreenState extends State<Sign_In_Screen> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  child: Visibility(
-                    replacement: const Center(
-                      child: CircularProgressIndicator(),
+                const SizedBox(
+                  height: 96,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      child: Visibility(
+                        replacement: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _signInWithGoogle(context);
+                          },
+                          child: const Text('Google'),
+                        ),
+                      ),
                     ),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _signInWithGoogle(context);
-                      },
-                      child: const Text('Sign in with Google'),
+                    const Spacer(),
+                    SizedBox(
+                      child: Visibility(
+                        replacement: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _signInWithGoogle(context);
+                          },
+                          child: const Text('Facebook'),
+                        ),
+                      ),
                     ),
-                  ),
+                    const Spacer(),
+                    SizedBox(
+                      child: Visibility(
+                        replacement: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _signInWithGoogle(context);
+                          },
+                          child: const Text('Phone'),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 60,

@@ -1,6 +1,9 @@
+import 'package:attendance/Screen/Home_Page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+import 'Widget/Deawer.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
@@ -24,7 +27,7 @@ class _NavBarState extends State<NavBar> {
             _scaffoldKey.currentState?.openDrawer(); // Use the scaffoldKey to open the drawer
           },
         ),
-        title: const Text('Person'),
+        title: const Text('High School Attendance'),
         actions: [
           IconButton(
             icon: const Icon(Icons.login_outlined),
@@ -36,8 +39,7 @@ class _NavBarState extends State<NavBar> {
         ],
       ),
       drawer: const UserDrawer(),
-      body: const Center(
-        child: Text('Content of your screen goes here'),
+      body: const Home_Page(
       ),
     );
   }
@@ -58,62 +60,5 @@ class _NavBarState extends State<NavBar> {
         ),
       );
     }
-  }
-}
-
-class UserDrawer extends StatelessWidget {
-  const UserDrawer({Key? key}) : super(key: key);
-
-  Future<User?> _getCurrentUser() async {
-    return FirebaseAuth.instance.currentUser;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: <Widget>[
-          FutureBuilder<User?>(
-            future: _getCurrentUser(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const UserAccountsDrawerHeader(
-                  accountName: Text('Loading...'),
-                  accountEmail: Text('Loading...'),
-                );
-              }
-              if (!snapshot.hasData || snapshot.data == null) {
-                return const UserAccountsDrawerHeader(
-                  accountName: Text('Guest'),
-                  accountEmail: Text('Not logged in'),
-                );
-              }
-              User user = snapshot.data!;
-              return UserAccountsDrawerHeader(
-                accountName: Text(user.displayName ?? 'No name'),
-                accountEmail: Text(user.email ?? 'No email'),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.home),
-            title: const Text('Home'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/home');
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Settings'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/settings');
-            },
-          ),
-        ],
-      ),
-    );
   }
 }
