@@ -51,7 +51,7 @@ class UserDrawer extends StatelessWidget {
             leading: const Icon(Icons.add),
             title: const Text('Attendance'),
             onTap: () {
-              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>const Attendance()), (route) => false);
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>const Attendance(subject: '',)), (route) => false);
             },
           ),
           ListTile(

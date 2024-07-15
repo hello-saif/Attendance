@@ -36,7 +36,17 @@ class _Sign_In_ScreenState extends State<Sign_In_Screen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 100),
+                const SizedBox(height: 80),
+
+                ClipOval(
+                  child: Image.network(
+                    'https://static.vecteezy.com/system/resources/previews/004/903/201/original/cartoon-illustration-of-thai-female-teacher-holding-a-stick-in-front-of-blackboard-vector.jpg', // Replace with your image URL
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(height: 20),
                 Text(
                   'Get Started With',
                   style: Theme.of(context).textTheme.titleLarge,
@@ -104,7 +114,14 @@ class _Sign_In_ScreenState extends State<Sign_In_Screen> {
                           onPressed: () {
                             _signInWithGoogle(context);
                           },
-                          child: const Text('Google'),
+                          style: ElevatedButton.styleFrom(
+                            shape: const CircleBorder(),
+                          ),
+                          child: const Icon(
+                            Icons.g_mobiledata_sharp,
+                            color: Colors.amber, // Icon color
+                            size: 50.0, // Icon size
+                          ),
                         ),
                       ),
                     ),
@@ -116,9 +133,16 @@ class _Sign_In_ScreenState extends State<Sign_In_Screen> {
                         ),
                         child: ElevatedButton(
                           onPressed: () {
-                            _signInWithGoogle(context);
+                            //_signInWithGoogle(context);
                           },
-                          child: const Text('Facebook'),
+                          style: ElevatedButton.styleFrom(
+                            shape: const CircleBorder(),
+                          ),
+                          child: const Icon(
+                            Icons.facebook,
+                            color: Colors.amber, // Icon color
+                            size: 50.0, // Icon size
+                          ),
                         ),
                       ),
                     ),
@@ -130,12 +154,21 @@ class _Sign_In_ScreenState extends State<Sign_In_Screen> {
                         ),
                         child: ElevatedButton(
                           onPressed: () {
-                            _signInWithGoogle(context);
+                            //_signInWithGoogle(context);
                           },
-                          child: const Text('Phone'),
+                          style: ElevatedButton.styleFrom(
+                            shape: const CircleBorder(),
+                          ),
+                          child: const Icon(
+                            Icons.phone,
+                            color: Colors.amber, // Icon color
+                            size: 50.0, // Icon size
+                          ),
                         ),
                       ),
                     ),
+
+
                   ],
                 ),
                 const SizedBox(
