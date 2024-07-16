@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../Nav_Bar.dart';
 import 'Attendance.dart';
 import 'Attendance_report.dart';
+import 'Chat.dart';
 
 class UserDrawer extends StatelessWidget {
   const UserDrawer({Key? key}) : super(key: key);
@@ -59,6 +60,15 @@ class UserDrawer extends StatelessWidget {
             title: const Text('Attendance Report'),
             onTap: () {
               Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>const Attendance_report(subject: '',)), (route) => false);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.chat_outlined),
+            title: const Text('Chat'),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>const Chat()), (route) => false);
+
             },
           ),
           ListTile(
