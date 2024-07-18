@@ -1,3 +1,4 @@
+import 'package:attendance/Screen/Widget/Darkmode.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -72,11 +73,12 @@ class UserDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Settings'),
+            leading: const Icon(Icons.mode_night),
+            title: const Text('Mode'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/settings');
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>const DarkMode()), (route) => false);
+
             },
           ),
         ],

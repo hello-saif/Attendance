@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../Subject List/BanglaAttendanceScreen.dart';
-import '../../Subject List/DataAttendanceScreen.dart';
-import '../../Subject List/MathAttendanceScreen.dart';
-import 'Deawer.dart'; // Import your UserDrawer widget file
+import 'package:attendance/Subject%20List/BanglaAttendanceScreen.dart';
+import 'package:attendance/Subject%20List/DataAttendanceScreen.dart';
+import 'package:attendance/Subject%20List/MathAttendanceScreen.dart';
+import 'package:attendance/Subject%20List/ICTAttendanceScreen.dart';
+import 'Deawer.dart';
 
 class Attendance extends StatefulWidget {
   final String subject;
@@ -16,9 +17,11 @@ class Attendance extends StatefulWidget {
 
 class _AttendanceState extends State<Attendance> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final CollectionReference studentsCollection = FirebaseFirestore.instance.collection('students');
-  final CollectionReference subjectsCollection = FirebaseFirestore.instance.collection('subject');
-  late DateTime currentDate = DateTime.now(); // Initialize with current date
+  final CollectionReference studentsCollection =
+  FirebaseFirestore.instance.collection('students');
+  final CollectionReference subjectsCollection =
+  FirebaseFirestore.instance.collection('subject');
+  late DateTime currentDate = DateTime.now();
   List<String> subjects = [];
 
   @override
@@ -31,7 +34,8 @@ class _AttendanceState extends State<Attendance> {
     try {
       QuerySnapshot querySnapshot = await subjectsCollection.get();
       setState(() {
-        subjects = querySnapshot.docs.map((doc) => doc['name'] as String).toList();
+        subjects =
+            querySnapshot.docs.map((doc) => doc['name'] as String).toList();
       });
     } catch (e) {
       print('Error fetching subjects: $e');
@@ -100,7 +104,7 @@ class _AttendanceState extends State<Attendance> {
         title: const Text('Class Attendance'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.view_list), // Add your custom icon here
+            icon: const Icon(Icons.view_list),
             onPressed: () {
               showDialog(
                 context: context,
@@ -113,7 +117,7 @@ class _AttendanceState extends State<Attendance> {
                           return ListTile(
                             title: Text(subject),
                             onTap: () {
-                              Navigator.pop(context); // Close the dialog
+                              Navigator.pop(context);
                               navigateToSubjectScreen(subject);
                             },
                           );
@@ -133,9 +137,32 @@ class _AttendanceState extends State<Attendance> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: subjects.map((String subject) {
-            return ListTile(
-              title: Text(subject),
-              onTap: () => navigateToSubjectScreen(subject),
+            return Container(
+              margin: const EdgeInsets.symmetric(vertical: 8.0),
+              decoration: BoxDecoration(
+                color: Colors.greenAccent.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: ListTile(
+                title: Text(
+                  subject,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.black54),
+                onTap: () => navigateToSubjectScreen(subject),
+              ),
             );
           }).toList(),
         ),
@@ -149,35 +176,31 @@ class _AttendanceState extends State<Attendance> {
   }
 
   void navigateToSubjectScreen(String subject) {
+    Widget subjectScreen;
+
     switch (subject) {
       case 'Bangla':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const BanglaAttendanceScreen(),
-          ),
-        );
+        subjectScreen = const BanglaAttendanceScreen();
         break;
       case 'Math':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const MathAttendanceScreen(),
-          ),
-        );
+        subjectScreen = const MathAttendanceScreen();
         break;
       case 'Data':
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const DataAttendanceScreen(),
-          ),
-        );
+        subjectScreen = const DataAttendanceScreen();
         break;
-    // Add other cases here for additional subjects
+      case 'ICT':
+        subjectScreen = const ICTAttendanceScreen();
+        break;
       default:
-      // Handle unknown subject
+        subjectScreen = const BanglaAttendanceScreen(); // Default screen if subject not found
         break;
     }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => subjectScreen,
+      ),
+    );
   }
 }

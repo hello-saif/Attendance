@@ -3,8 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../Screen/Widget/Deawer.dart';
-import 'DataAttendanceScreen.dart';
-import 'MathAttendanceScreen.dart';
 
 class BanglaAttendanceScreen extends StatefulWidget {
   const BanglaAttendanceScreen({super.key});

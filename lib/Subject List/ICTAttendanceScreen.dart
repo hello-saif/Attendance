@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 
 import '../Screen/Widget/Deawer.dart';
 
-class MathAttendanceScreen extends StatefulWidget {
-  const MathAttendanceScreen({super.key});
+class ICTAttendanceScreen extends StatefulWidget {
+  const ICTAttendanceScreen({super.key});
 
   @override
-  State<MathAttendanceScreen> createState() => _MathAttendanceScreenState();
+  State<ICTAttendanceScreen> createState() => _ICTAttendanceScreenState();
 }
 
-class _MathAttendanceScreenState extends State<MathAttendanceScreen> {
+class _ICTAttendanceScreenState extends State<ICTAttendanceScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final CollectionReference studentsCollection = FirebaseFirestore.instance.collection('studentsMath');
+  final CollectionReference studentsCollection = FirebaseFirestore.instance.collection('studentsICT');
   late DateTime currentDate = DateTime.now(); // Initialize with current date
 
   @override
@@ -28,7 +28,7 @@ class _MathAttendanceScreenState extends State<MathAttendanceScreen> {
             _scaffoldKey.currentState?.openDrawer();
           },
         ),
-        title: const Text('Math Attendance '),
+        title: const Text('ICT Attendance '),
         actions: [
           IconButton(
             icon: const Icon(Icons.calendar_today),
