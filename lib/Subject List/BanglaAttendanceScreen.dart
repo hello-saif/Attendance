@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import '../Screen/Widget/Deawer.dart';
 
 class BanglaAttendanceScreen extends StatefulWidget {
@@ -13,8 +12,8 @@ class BanglaAttendanceScreen extends StatefulWidget {
 
 class _BanglaAttendanceScreenState extends State<BanglaAttendanceScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final CollectionReference studentsCollection = FirebaseFirestore.instance.collection('students');
-  late DateTime currentDate = DateTime.now(); // Initialize with current date
+  final CollectionReference studentsBanglaCollection = FirebaseFirestore.instance.collection('studentsBangla');
+  DateTime currentDate = DateTime.now(); // Initialize with current date
 
   @override
   Widget build(BuildContext context) {
@@ -28,71 +27,12 @@ class _BanglaAttendanceScreenState extends State<BanglaAttendanceScreen> {
             _scaffoldKey.currentState?.openDrawer();
           },
         ),
-        title: const Text('Bangla Attendance '),
+        title: const Text('Bangla Attendance'),
         actions: [
           IconButton(
             icon: const Icon(Icons.calendar_today),
             onPressed: () => _selectDate(context),
           ),
-          // IconButton(
-          //   icon: const Icon(Icons.view_list), // Add your custom icon here
-          //   onPressed: () {
-          //     // Define your list of subjects (replace with your actual subject names)
-          //     List<String> subjects = [
-          //       'Bangla',
-          //       'Math',
-          //       'Data',
-          //     ];
-          //
-          //     // Show a dialog with a list of subjects
-          //     showDialog(
-          //       context: context,
-          //       builder: (BuildContext context) {
-          //         return AlertDialog(
-          //           title: const Text('Select a Subject'),
-          //           content: SingleChildScrollView(
-          //             child: ListBody(
-          //               children: subjects.map((String subject) {
-          //                 return ListTile(
-          //                   title: Text(subject),
-          //                   onTap: () {
-          //                     Navigator.pop(context); // Close the dialog
-          //                     switch (subject) {
-          //                       case 'Bangla':
-          //                         Navigator.push(
-          //                           context,
-          //                           MaterialPageRoute(
-          //                             builder: (context) => const BanglaAttendanceScreen(),
-          //                           ),
-          //                         );
-          //                         break;
-          //                       case 'Math':
-          //                         Navigator.push(
-          //                           context,
-          //                           MaterialPageRoute(
-          //                             builder: (context) => const MathAttendanceScreen(),
-          //                           ),
-          //                         );
-          //                         break;
-          //                       case 'Data':
-          //                         Navigator.push(
-          //                           context,
-          //                           MaterialPageRoute(
-          //                             builder: (context) => const DataAttendanceScreen(),
-          //                           ),
-          //                         );
-          //                         break;
-          //                     }
-          //                   },
-          //                 );
-          //               }).toList(),
-          //             ),
-          //           ),
-          //         );
-          //       },
-          //     );
-          //   },
-          // ),
         ],
       ),
       drawer: const UserDrawer(),
@@ -103,33 +43,37 @@ class _BanglaAttendanceScreenState extends State<BanglaAttendanceScreen> {
           children: [
             // Header Row as a Column
             const Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(width: 10),
-                Text(
-                  'NAME',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                Expanded(
+                  child: Text(
+                    'No',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
                 ),
-                SizedBox(width: 140),
-                Text(
-                  'Present/Absent',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                Expanded(
+                  child: Text(
+                    'NAME',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
                 ),
-                SizedBox(width: 5),
-                Text(
-                  'IMAGE',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                Expanded(
+                  child: Text(
+                    'Present/Absent',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
                 ),
+
               ],
             ),
             const Divider(), // Divider to separate header from the list
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: studentsCollection.snapshots(),
+                stream: studentsBanglaCollection.snapshots(),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
+                  // if (snapshot.connectionState == ConnectionState.waiting) {
+                  //   return const Center(child: CircularProgressIndicator());
+                  // }
 
                   if (snapshot.hasError) {
                     return const Center(child: Text('Something went wrong'));
@@ -143,13 +87,13 @@ class _BanglaAttendanceScreenState extends State<BanglaAttendanceScreen> {
                     final data = doc.data() as Map<String, dynamic>;
                     final imageUrl = data['imageUrl'] ?? '';
                     final name = data['name'] ?? 'Unnamed';
+                    final attendance = data['attendance'] ?? {};
+                    final isPresent = attendance[_formattedDate(currentDate)]?['Bangla']?['isPresent'] ?? false;
 
                     return Student(
                       id: doc.id,
                       name: name,
-                      isPresent: data['attendance'] != null &&
-                          data['attendance'][_formattedDate(currentDate)] != null &&
-                          data['attendance'][_formattedDate(currentDate)]['isPresent'] ?? false,
+                      isPresent: isPresent,
                       imageUrl: imageUrl,
                     );
                   }).toList();
@@ -157,52 +101,53 @@ class _BanglaAttendanceScreenState extends State<BanglaAttendanceScreen> {
                   return ListView.builder(
                     itemCount: students.length,
                     itemBuilder: (context, index) {
-                      return Row(
-                        children: [
-                          Text(
-                            '${index + 1}.',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(width: 30),
-                          Expanded(
-                            child: ListTile(
-                              title: Text(students[index].name),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Checkbox(
-                                    value: students[index].isPresent,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        students[index].isPresent = value!;
-                                      });
-
-                                      // Update Firestore
-                                      studentsCollection
-                                          .doc(students[index].id)
-                                          .update({
-                                        'attendance.${_formattedDate(currentDate)}.isPresent': value,
-                                      });
-                                    },
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete),
-                                    onPressed: () {
-                                      studentsCollection
-                                          .doc(students[index].id)
-                                          .delete();
-                                    },
-                                  ),
-                                  CircleAvatar(
-                                    backgroundImage: NetworkImage(students[index].imageUrl),
-                                    backgroundColor: Colors.grey, // Optional: Background color for the avatar
-                                    radius: 20, // Adjust the size of the avatar as needed
-                                  ),
-                                ],
+                      return ListTile(
+                        leading: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Index number
+                            Text(
+                              '${index + 1}.',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 8), // Add some spacing between number and image
+                            // Student image
+                            CircleAvatar(
+                              backgroundImage: NetworkImage(students[index].imageUrl),
+                              backgroundColor: Colors.grey, // Optional: Background color for the avatar
+                              radius: 20, // Adjust the size of the avatar as needed
+                            ),
+                          ],
+                        ),
+                        title: Text('${students[index].name}'),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Checkbox(
+                              value: students[index].isPresent,
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  students[index].isPresent = value ?? false;
+                                });
+
+                                // Update Firestore
+                                studentsBanglaCollection.doc(students[index].id).update({
+                                  'attendance.${_formattedDate(currentDate)}.Bangla.isPresent': students[index].isPresent,
+                                });
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () {
+                                studentsBanglaCollection.doc(students[index].id).delete();
+                              },
+                            ),
+                          ],
+                        ),
                       );
                     },
                   );
@@ -263,11 +208,11 @@ class _BanglaAttendanceScreenState extends State<BanglaAttendanceScreen> {
 
                 if (name.isNotEmpty && imageUrl.isNotEmpty) {
                   // Add student to Firestore
-                  await studentsCollection.add({
+                  await studentsBanglaCollection.add({
                     'name': name,
                     'imageUrl': imageUrl,
                     'attendance': {
-                      _formattedDate(currentDate): {'isPresent': false},
+                      _formattedDate(currentDate): {'Bangla': {'isPresent': false}},
                     },
                   });
                   Navigator.of(context).pop();
@@ -282,9 +227,16 @@ class _BanglaAttendanceScreenState extends State<BanglaAttendanceScreen> {
 
   void _submitAttendance() {
     // Process the attendance data
-    studentsCollection.get().then((QuerySnapshot querySnapshot) {
+    studentsBanglaCollection.get().then((QuerySnapshot querySnapshot) {
       for (var doc in querySnapshot.docs) {
-        print('${doc['name']} is ${doc['attendance'] != null && doc['attendance'][_formattedDate(currentDate)] != null && doc['attendance'][_formattedDate(currentDate)]['isPresent'] ? 'Present' : 'Absent'}');
+        final data = doc.data() as Map<String, dynamic>;
+        final name = data['name'] ?? 'Unnamed';
+        final attendance = data['attendance'] ?? {};
+        final isPresent = attendance[_formattedDate(currentDate)]?['Bangla']?['isPresent'] ?? false;
+
+        if (kDebugMode) {
+          print('$name is ${isPresent ? 'Present' : 'Absent'} on ${_formattedDate(currentDate)}');
+        }
       }
 
       // Show a confirmation message
@@ -312,7 +264,7 @@ class _BanglaAttendanceScreenState extends State<BanglaAttendanceScreen> {
 
   // Helper method to format date as Firestore document key
   String _formattedDate(DateTime date) {
-    return '${date.year}-${date.month}-${date.day}';
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 }
 

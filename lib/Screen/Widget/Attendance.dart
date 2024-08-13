@@ -4,12 +4,13 @@ import 'package:attendance/Subject%20List/BanglaAttendanceScreen.dart';
 import 'package:attendance/Subject%20List/DataAttendanceScreen.dart';
 import 'package:attendance/Subject%20List/MathAttendanceScreen.dart';
 import 'package:attendance/Subject%20List/ICTAttendanceScreen.dart';
+import '../../Subject List/C+AttendanceScreen.dart';
 import 'Deawer.dart';
 
 class Attendance extends StatefulWidget {
   final String subject;
 
-  const Attendance({Key? key, required this.subject}) : super(key: key);
+  const Attendance({super.key, required this.subject});
 
   @override
   State<Attendance> createState() => _AttendanceState();
@@ -17,8 +18,6 @@ class Attendance extends StatefulWidget {
 
 class _AttendanceState extends State<Attendance> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final CollectionReference studentsCollection =
-  FirebaseFirestore.instance.collection('students');
   final CollectionReference subjectsCollection =
   FirebaseFirestore.instance.collection('subject');
   late DateTime currentDate = DateTime.now();
@@ -147,7 +146,7 @@ class _AttendanceState extends State<Attendance> {
                     color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 1,
                     blurRadius: 5,
-                    offset: Offset(0, 3),
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
@@ -181,6 +180,9 @@ class _AttendanceState extends State<Attendance> {
     switch (subject) {
       case 'Bangla':
         subjectScreen = const BanglaAttendanceScreen();
+        break;
+      case 'C+':
+        subjectScreen = const CAttendanceScreen();
         break;
       case 'Math':
         subjectScreen = const MathAttendanceScreen();

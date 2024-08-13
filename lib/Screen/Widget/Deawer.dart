@@ -60,7 +60,7 @@ class UserDrawer extends StatelessWidget {
             leading: const Icon(Icons.report_problem_outlined),
             title: const Text('Attendance Report'),
             onTap: () {
-              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>const Attendance_report(subject: '',)), (route) => false);
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>const AttendanceReport(subject: '',)), (route) => false);
             },
           ),
           ListTile(
@@ -77,7 +77,7 @@ class UserDrawer extends StatelessWidget {
             title: const Text('Mode'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>const DarkMode()), (route) => false);
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> DarkModeApp()), (route) => false);
 
             },
           ),

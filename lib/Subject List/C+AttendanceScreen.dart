@@ -1,19 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import '../Screen/Widget/Deawer.dart';
 
-class MathAttendanceScreen extends StatefulWidget {
-  const MathAttendanceScreen({super.key});
+class CAttendanceScreen extends StatefulWidget {
+  const CAttendanceScreen({super.key});
 
   @override
-  State<MathAttendanceScreen> createState() => _MathAttendanceScreenState();
+  State<CAttendanceScreen> createState() => _CAttendanceScreenState();
 }
 
-class _MathAttendanceScreenState extends State<MathAttendanceScreen> {
+class _CAttendanceScreenState extends State<CAttendanceScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final CollectionReference studentsMathCollection = FirebaseFirestore.instance.collection('studentsMath');
+  final CollectionReference studentsCCollection = FirebaseFirestore.instance.collection('studentsC');
   DateTime currentDate = DateTime.now(); // Initialize with current date
 
   @override
@@ -28,7 +27,7 @@ class _MathAttendanceScreenState extends State<MathAttendanceScreen> {
             _scaffoldKey.currentState?.openDrawer();
           },
         ),
-        title: const Text('Math Attendance'),
+        title: const Text('C+ Attendance'),
         actions: [
           IconButton(
             icon: const Icon(Icons.calendar_today),
@@ -73,7 +72,7 @@ class _MathAttendanceScreenState extends State<MathAttendanceScreen> {
             const Divider(), // Divider to separate header from the list
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: studentsMathCollection.snapshots(),
+                stream: studentsCCollection.snapshots(),
                 builder: (context, snapshot) {
                   // if (snapshot.connectionState == ConnectionState.waiting) {
                   //   return const Center(child: CircularProgressIndicator());
@@ -92,7 +91,7 @@ class _MathAttendanceScreenState extends State<MathAttendanceScreen> {
                     final imageUrl = data['imageUrl'] ?? '';
                     final name = data['name'] ?? 'Unnamed';
                     final attendance = data['attendance'] ?? {};
-                    final isPresent = attendance[_formattedDate(currentDate)]?['Math']?['isPresent'] ?? false;
+                    final isPresent = attendance[_formattedDate(currentDate)]?['C+']?['isPresent'] ?? false;
 
                     return Student(
                       id: doc.id,
@@ -139,15 +138,15 @@ class _MathAttendanceScreenState extends State<MathAttendanceScreen> {
                                 });
 
                                 // Update Firestore
-                                studentsMathCollection.doc(students[index].id).update({
-                                  'attendance.${_formattedDate(currentDate)}.Math.isPresent': students[index].isPresent,
+                                studentsCCollection.doc(students[index].id).update({
+                                  'attendance.${_formattedDate(currentDate)}.C+.isPresent': students[index].isPresent,
                                 });
                               },
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete),
                               onPressed: () {
-                                studentsMathCollection.doc(students[index].id).delete();
+                                studentsCCollection.doc(students[index].id).delete();
                               },
                             ),
                           ],
@@ -212,11 +211,11 @@ class _MathAttendanceScreenState extends State<MathAttendanceScreen> {
 
                 if (name.isNotEmpty && imageUrl.isNotEmpty) {
                   // Add student to Firestore
-                  await studentsMathCollection.add({
+                  await studentsCCollection.add({
                     'name': name,
                     'imageUrl': imageUrl,
                     'attendance': {
-                      _formattedDate(currentDate): {'Math': {'isPresent': false}},
+                      _formattedDate(currentDate): {'C+': {'isPresent': false}},
                     },
                   });
                   Navigator.of(context).pop();
@@ -231,12 +230,12 @@ class _MathAttendanceScreenState extends State<MathAttendanceScreen> {
 
   void _submitAttendance() {
     // Process the attendance data
-    studentsMathCollection.get().then((QuerySnapshot querySnapshot) {
+    studentsCCollection.get().then((QuerySnapshot querySnapshot) {
       for (var doc in querySnapshot.docs) {
         final data = doc.data() as Map<String, dynamic>;
         final name = data['name'] ?? 'Unnamed';
         final attendance = data['attendance'] ?? {};
-        final isPresent = attendance[_formattedDate(currentDate)]?['Math']?['isPresent'] ?? false;
+        final isPresent = attendance[_formattedDate(currentDate)]?['C+']?['isPresent'] ?? false;
 
         if (kDebugMode) {
           print('$name is ${isPresent ? 'Present' : 'Absent'} on ${_formattedDate(currentDate)}');

@@ -17,8 +17,7 @@ class Chat extends StatefulWidget {
 class _ChatState extends State<Chat> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _messageController = TextEditingController();
-  final CollectionReference _chatCollection =
-  FirebaseFirestore.instance.collection('chats');
+  final CollectionReference _chatCollection = FirebaseFirestore.instance.collection('chats');
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
@@ -35,6 +34,40 @@ class _ChatState extends State<Chat> {
     setState(() {});
   }
 
+  Future<void> _pickAndSendImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      final File imageFile = File(pickedFile.path);
+      final String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+      try {
+        // Upload the image to Firebase Storage
+        final UploadTask uploadTask = _storage.ref('chat_images/$fileName').putFile(imageFile);
+        final TaskSnapshot taskSnapshot = await uploadTask;
+
+        // Get the download URL of the uploaded image
+        final String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+
+        // Send the image URL as a message
+        if (_currentUser != null) {
+          String userName = _currentUser!.displayName ?? _currentUser!.uid;
+
+          _chatCollection.add({
+            'userId': userName,
+            'message': '',
+            'imageUrl': downloadUrl,
+            'timestamp': FieldValue.serverTimestamp(),
+          });
+        }
+      } catch (e) {
+        // Handle errors
+        print('Error uploading image: $e');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,6 +81,16 @@ class _ChatState extends State<Chat> {
           },
         ),
         title: const Text('Chat'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.video_camera_back_outlined),
+            onPressed: () {  },
+          ),
+          IconButton(
+            icon: const Icon(Icons.call),
+            onPressed: () {  },
+          ),
+        ],
       ),
       drawer: const UserDrawer(),
       body: Column(
@@ -72,32 +115,45 @@ class _ChatState extends State<Chat> {
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     final message = messages[index];
-
                     final data = message.data() as Map<String, dynamic>;
                     final String userId = data['userId'];
                     final String text = data['message'];
-                    final String? imageUrl =
-                    data.containsKey('imageUrl') ? data['imageUrl'] : null;
+                    final String? imageUrl = data.containsKey('imageUrl') ? data['imageUrl'] : null;
 
-                    return ListTile(
-                      title: Container(
-                        padding: const EdgeInsets.all(10.0),
-                        decoration: BoxDecoration(
-                          color: Colors.lightBlueAccent.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(10),
+                    final bool isCurrentUser = userId == (_currentUser?.displayName ?? _currentUser?.uid);
+
+                    return Column(
+                      crossAxisAlignment: isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                      children: [
+                        // Display the name above the message box
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+                          child: Text(
+                            userId,
+                            style: const TextStyle(fontSize: 12, color: Colors.black54),
+                          ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (imageUrl != null) Image.network(imageUrl),
-                            if (text.isNotEmpty) Text(text),
-                          ],
+                        Align(
+                          alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+                          child: Container(
+                            padding: const EdgeInsets.all(10.0),
+                            margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+                            decoration: BoxDecoration(
+                              color: isCurrentUser
+                                  ? Colors.blue.withOpacity(0.7)
+                                  : Colors.grey.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (imageUrl != null) Image.network(imageUrl),
+                                if (text.isNotEmpty) Text(text),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                      subtitle: Text(
-                        userId,
-                        style: const TextStyle(fontSize: 12),
-                      ),
+                      ],
                     );
                   },
                 );
@@ -109,7 +165,8 @@ class _ChatState extends State<Chat> {
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.image), onPressed: () {  },
+                  icon: const Icon(Icons.image),
+                  onPressed: _pickAndSendImage,
                 ),
                 Expanded(
                   child: TextField(
@@ -146,5 +203,5 @@ class _ChatState extends State<Chat> {
       _messageController.clear();
     }
   }
-
 }
+
