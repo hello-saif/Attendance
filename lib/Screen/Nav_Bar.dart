@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'Sign In&Out/Sign_In_Screen.dart';
 import 'Widget/Deawer.dart';
 
 class NavBar extends StatefulWidget {
@@ -47,8 +48,7 @@ class _NavBarState extends State<NavBar> {
   Future<void> _signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
-      // Navigate to login screen or any other screen after logout
-      Navigator.pushReplacementNamed(context, '/Sign_In_Screen'); // Replace '/Sign_In_Screen' with your login screen route
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>const Sign_In_Screen(title: '',)), (route) => false);// Replace '/Sign_In_Screen' with your login screen route
     } catch (e) {
       if (kDebugMode) {
         print('Error signing out: $e');

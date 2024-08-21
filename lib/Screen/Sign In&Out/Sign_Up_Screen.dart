@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'Sign_In_Screen.dart';
 
 class Sign_Up_Screen extends StatefulWidget {
-  const Sign_Up_Screen({Key? key}) : super(key: key);
+  const Sign_Up_Screen({super.key});
 
   @override
   State<Sign_Up_Screen> createState() => _Sign_Up_ScreenState();
@@ -45,7 +45,7 @@ class _Sign_Up_ScreenState extends State<Sign_Up_Screen> {
     } catch (e) {
       print('Error registering user: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Failed to register. Please try again.'),
         ),
       );

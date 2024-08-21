@@ -1,21 +1,28 @@
-import 'package:attendance/Screen/Widget/Darkmode.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../main.dart';
 import '../Nav_Bar.dart';
 import 'Attendance.dart';
 import 'Attendance_report.dart';
 import 'Chat.dart';
 
-class UserDrawer extends StatelessWidget {
-  const UserDrawer({Key? key}) : super(key: key);
+class UserDrawer extends StatefulWidget {
+  const UserDrawer({super.key});
 
+  @override
+  State<UserDrawer> createState() => _UserDrawerState();
+}
+
+class _UserDrawerState extends State<UserDrawer> {
   Future<User?> _getCurrentUser() async {
     return FirebaseAuth.instance.currentUser;
   }
 
   @override
   Widget build(BuildContext context) {
+    final darkModeNotifier = Provider.of<DarkModeNotifier>(context);
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -73,12 +80,13 @@ class UserDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.mode_night),
+            leading: Icon(
+              darkModeNotifier.isDarkMode ? Icons.toggle_on : Icons.toggle_off,
+              color: darkModeNotifier.isDarkMode ? Colors.green : Colors.grey,
+            ),
             title: const Text('Mode'),
             onTap: () {
-              Navigator.pop(context);
-              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=> DarkModeApp()), (route) => false);
-
+              darkModeNotifier.toggleDarkMode();
             },
           ),
         ],

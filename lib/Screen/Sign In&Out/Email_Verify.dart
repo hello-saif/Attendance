@@ -1,10 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-import 'Set_Password.dart';
+import 'Sign_In_Screen.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
-  const EmailVerificationScreen({Key? key}) : super(key: key);
+  const EmailVerificationScreen({super.key});
 
   @override
   State<EmailVerificationScreen> createState() =>
@@ -14,8 +14,6 @@ class EmailVerificationScreen extends StatefulWidget {
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   final TextEditingController _emailTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  String? _verificationCode; // to store the verification code
 
   @override
   Widget build(BuildContext context) {
@@ -31,18 +29,14 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 const SizedBox(height: 100),
                 Text(
                   'Your Email Address',
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(
-                  height: 4,
-                ),
+                const SizedBox(height: 4),
                 const Text(
-                  'A 6-digit verification code will be sent to your email address',
+                  'Enter your email address to reset your password',
                   style: TextStyle(color: Colors.grey, fontSize: 15),
                 ),
-                const SizedBox(
-                  height: 24,
-                ),
+                const SizedBox(height: 24),
                 TextFormField(
                   controller: _emailTEController,
                   keyboardType: TextInputType.emailAddress,
@@ -59,21 +53,19 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(
-                  height: 16,
-                ),
+                const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      _sendVerificationEmail();
+                      if (_formKey.currentState!.validate()) {
+                        _sendPasswordResetEmail();
+                      }
                     },
-                    child: const Icon(Icons.arrow_circle_right_outlined),
+                    child: const Text('Send Reset Link'),
                   ),
                 ),
-                const SizedBox(
-                  height: 32,
-                ),
+                const SizedBox(height: 32),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -85,12 +77,10 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      child: const Text(
-                        'Sign in',
-                      ),
+                      child: const Text('Sign in'),
                     ),
                   ],
-                )
+                ),
               ],
             ),
           ),
@@ -105,31 +95,33 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     return regex.hasMatch(email);
   }
 
-  Future<void> _sendVerificationEmail() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        await FirebaseAuth.instance.sendPasswordResetEmail(
-          email: _emailTEController.text.trim(),
-        );
+  Future<void> _sendPasswordResetEmail() async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(
+        email: _emailTEController.text.trim(),
+      );
 
-        // Simulate receiving the verification code (this would normally be sent to the user's email)
-        _verificationCode = "123456"; // This should be replaced with the actual code sent to the user's email
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password reset email sent! Check your email.')),
+      );
 
-        // Navigate to OTP verification screen after sending email
-        Navigator.push(
+      // Introduce a delay before navigating to the sign-in screen
+      Future.delayed(const Duration(seconds: 10), () {
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (context) => SetPasswordScreen(email: _emailTEController.text.trim(), oobCode: _verificationCode.toString()),
+            builder: (context) => const Sign_In_Screen(title: ''),
           ),
+              (route) => false,
         );
-      } catch (e) {
-        print('Error sending email verification: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to send email: $e'),
-          ),
-        );
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error sending password reset email: $e');
       }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to send password reset email: $e')),
+      );
     }
   }
 

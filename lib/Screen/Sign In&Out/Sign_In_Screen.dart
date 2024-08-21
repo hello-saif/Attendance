@@ -21,6 +21,7 @@ class _Sign_In_ScreenState extends State<Sign_In_Screen> {
   final TextEditingController _passwordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoginInProgress = false;
+  bool _obscureText = true;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -70,19 +71,29 @@ class _Sign_In_ScreenState extends State<Sign_In_Screen> {
                 const SizedBox(
                   height: 8,
                 ),
-                TextFormField(
-                  controller: _passwordTEController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    hintText: 'Password',
+            TextFormField(
+              controller: _passwordTEController,
+              obscureText: _obscureText,
+              decoration: InputDecoration(
+                hintText: 'Password',
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureText ? Icons.visibility_off : Icons.visibility,
                   ),
-                  validator: (String? value) {
-                    if (value?.trim().isEmpty ?? true) {
-                      return 'Enter your password';
-                    }
-                    return null;
+                  onPressed: () {
+                    setState(() {
+                      _obscureText = !_obscureText;
+                    });
                   },
                 ),
+              ),
+              validator: (String? value) {
+                if (value?.trim().isEmpty ?? true) {
+                  return 'Enter your password';
+                }
+                return null;
+              },
+            ),
                 const SizedBox(
                   height: 16,
                 ),
@@ -183,11 +194,11 @@ class _Sign_In_ScreenState extends State<Sign_In_Screen> {
                           fontSize: 16,
                         )),
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const EmailVerificationScreen()));
+                       Navigator.push(
+                           context,
+                           MaterialPageRoute(
+                               builder: (context) =>
+                                   const EmailVerificationScreen()));
                     },
                     child: const Text(
                       'Forgot Password?',
