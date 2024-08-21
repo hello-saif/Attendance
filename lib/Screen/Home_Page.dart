@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import '../Data/Model/Teacher.dart';
+import '../Data/Model/Video_Info.dart';
 import 'Widget/Video_Player.dart';
 
 class Home_Page extends StatefulWidget {
@@ -184,98 +186,6 @@ class _Home_PageState extends State<Home_Page> {
   }
 }
 
-class ClassInfo extends StatelessWidget {
-  final String title;
-  final String description;
-  final String instructor;
-
-  const ClassInfo({
-    super.key,
-    required this.title,
-    required this.description,
-    required this.instructor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 4), // Space between title and description
-        Text(
-          description,
-          style: const TextStyle(fontSize: 16),
-        ),
-        const SizedBox(height: 4), // Space between description and instructor
-        Text(
-          'Instructor: $instructor',
-          style: const TextStyle(fontSize: 14, color: Colors.grey),
-        ),
-      ],
-    );
-  }
-}
-
-class TeacherInfo extends StatelessWidget {
-  final String imageUrl;
-  final String name;
-  final String description;
-
-  const TeacherInfo({
-    super.key,
-    required this.imageUrl,
-    required this.name,
-    required this.description,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 80, // Set the width of the image container
-          height: 80, // Set the height of the image container
-          decoration: BoxDecoration(
-            shape: BoxShape.rectangle, // Make it square
-            borderRadius: BorderRadius.circular(10), // Optional: rounded corners
-            image: DecorationImage(
-              image: NetworkImage(imageUrl),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        const SizedBox(width: 10), // Space between image and text
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                name,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4), // Space between name and description
-              Text(
-                description,
-                style: const TextStyle(fontSize: 16),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 class Teacher {
   final String imageUrl;

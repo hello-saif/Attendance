@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'Sign In&Out/Sign_In_Screen.dart';
-import 'Widget/Deawer.dart';
+import '../Sign In&Out/Sign_In_Screen.dart';
+import '../Widget/Deawer.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});

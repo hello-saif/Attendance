@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:attendance/Subject%20List/BanglaAttendanceScreen.dart';
@@ -37,7 +38,9 @@ class _AttendanceState extends State<Attendance> {
             querySnapshot.docs.map((doc) => doc['name'] as String).toList();
       });
     } catch (e) {
-      print('Error fetching subjects: $e');
+      if (kDebugMode) {
+        print('Error fetching subjects: $e');
+      }
     }
   }
 
@@ -48,7 +51,9 @@ class _AttendanceState extends State<Attendance> {
         subjects.add(newSubject);
       });
     } catch (e) {
-      print('Error adding subject: $e');
+      if (kDebugMode) {
+        print('Error adding subject: $e');
+      }
     }
   }
 

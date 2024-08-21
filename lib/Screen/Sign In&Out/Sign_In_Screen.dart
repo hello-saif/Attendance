@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../Nav_Bar.dart';
+import '../App_Bar/Nav_Bar.dart';
 import 'Email_Verify.dart';
 import 'Sign_Up_Screen.dart';
 
